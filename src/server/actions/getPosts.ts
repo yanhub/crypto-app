@@ -1,21 +1,41 @@
 'use server'
 
-import { getPayload } from 'payload'
-import { cookies } from 'next/headers'
+import type { GetPostsResponse } from '@/types/postItem'
+import { getPayloadClient } from '@/server/payloadClient'
+import { Category, User } from '@/payload-types'
 
-export const createPost = async (formData: FormData) => {
-  const payload = await getPayload({ configPath: 'src/payload.config.ts' })
-  const token = cookies().get('payload-token')?.value
+export async function getPosts(): Promise<GetPostsResponse> {
+  try {
+    const payload = await getPayloadClient()
 
-  const { user } = await payload.auth({ collection: 'users', token })
-  if (!user) throw new Error('Not authenticated')
+    const result = await payload.find({
+      collection: 'posts',
+      depth: 1,
+      sort: '-createdAt',
+    })
 
-  const title = String(formData.get('title') ?? '')
-  const slug = String(formData.get('slug') ?? '')
-  const content = String(formData.get('content') ?? '')
+    const posts = result.docs
 
-  return payload.create({
-    collection: 'posts',
-    data: { title, slug, content, owner: user.id },
-  })
+    return {
+      success: true,
+      posts: posts.map(post => ({
+        id: post.id,
+        slug: post.slug,
+        title: post.title || '',
+        content: post.content || '',
+        owner: (post.owner as User)?.username || '',
+        categories: (post.categories as Category[]).map(category => (category as Category).id),
+        createdAt: post.createdAt,
+      })),
+    }
+  } catch (error) {
+    console.error('Get posts error:', error)
+
+    const message = error instanceof Error ? error.message : 'Failed to fetch posts'
+
+    return {
+      success: false,
+      message: message,
+    }
+  }
 }

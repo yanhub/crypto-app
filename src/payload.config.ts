@@ -1,4 +1,3 @@
-// storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
@@ -9,6 +8,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Categories } from './collections/Categories'
 import { Posts } from './collections/Posts'
+import { env } from '@/config/env'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,15 +22,13 @@ export default buildConfig({
   },
   collections: [Users, Categories, Posts],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: env.secret,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: mongooseAdapter({
-    url: process.env.DATABASE_URI || '',
+    url: env.dbUri,
   }),
   sharp,
-  plugins: [
-    // storage-adapter-placeholder
-  ],
+  plugins: [],
 })

@@ -1,5 +1,6 @@
 import React from 'react'
 import './styles.css'
+import ReduxProvider from '@/providers/ReduxProvider'
 
 export const metadata = {
   description: 'A blank template using Payload in a Next.js app.',
@@ -10,10 +11,12 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   const { children } = props
 
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
-        <main>{children}</main>
-      </body>
-    </html>
+    <ReduxProvider>
+      <html lang="en">
+        <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
+          <main>{children}</main>
+        </body>
+      </html>
+    </ReduxProvider>
   )
 }

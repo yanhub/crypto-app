@@ -1,30 +1,42 @@
 'use server'
 
-import { getPayload } from 'payload'
-import config from '@/payload.config'
+import type { AuthorizeUserInput, AuthorizeUserResponse } from '@/types/auth'
+import { getPayloadClient } from '@/server/payloadClient'
 
-export async function authorizeUser(formData: FormData) {
-  const username = formData.get('username') as string
-  const password = formData.get('password') as string
+export async function authorizeUser(userInput: AuthorizeUserInput): Promise<AuthorizeUserResponse> {
+  const payload = await getPayloadClient()
+
+  const { username, password } = userInput
 
   try {
-    const payload = await getPayload({ config })
-
-    const result = await payload.login({
+    const { user, token } = await payload.login({
       collection: 'users',
       data: { username, password },
     })
 
-    if (result?.user) {
+    if (!user) {
       return {
-        success: true,
-        name: result.user.name || result.user.username,
+        success: false,
+        message: 'User not found',
       }
     }
 
-    return { success: false, error: 'Wrong data' }
-  } catch (err: any) {
-    console.error('Login error:', err)
-    return { success: false, error: err.message }
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        username: user.username,
+      },
+      token,
+    }
+  } catch (error) {
+    console.error('Authorization error:', error)
+
+    const message = error instanceof Error ? error.message : 'Login failed'
+
+    return {
+      success: false,
+      message,
+    }
   }
 }

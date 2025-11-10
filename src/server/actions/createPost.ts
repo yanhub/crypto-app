@@ -1,21 +1,42 @@
 'use server'
 
-import { getPayload } from 'payload'
-import { cookies } from 'next/headers'
+import { getPayloadClient } from '@/server/payloadClient'
+import { slugify } from '@/utils/slugify'
+import { CreatePostInput, CreatePostResponse } from '@/types/postItem'
+import { Category, User } from '@/payload-types'
 
-export const createPost = async (formData: FormData) => {
-  const payload = await getPayload({ configPath: 'src/payload.config.ts' })
-  const token = cookies().get('payload-token')?.value
+export async function createPost(postData: CreatePostInput, userId: string): Promise<CreatePostResponse> {
+  try {
+    const { title, content, categoryId } = postData
 
-  const { user } = await payload.auth({ collection: 'users', token })
-  if (!user) throw new Error('Not authenticated')
+    const payload = await getPayloadClient()
+    const newPost = await payload.create({
+      collection: 'posts',
+      data: {
+        title,
+        slug: slugify(title),
+        content,
+        categories: categoryId ? [categoryId] : [],
+        owner: userId,
+      },
+    })
 
-  const title = String(formData.get('title') ?? '')
-  const slug = String(formData.get('slug') ?? '')
-  const content = String(formData.get('content') ?? '')
+    return {
+      success: true,
+      post: {
+        id: newPost.id,
+        slug: newPost.slug,
+        title: newPost.title || '',
+        content: newPost.content || '',
+        owner: (newPost.owner as User)?.username || '',
+        categories: (newPost.categories as Category[]).map(category => (category as Category).id),
+        createdAt: newPost.createdAt,
+      }
+    }
+  } catch (error) {
+    console.error('Create post error:', error)
+    const message = error instanceof Error ? error.message : 'Failed to create post'
 
-  return payload.create({
-    collection: 'posts',
-    data: { title, slug, content, owner: user.id },
-  })
+    return { success: false, message }
+  }
 }

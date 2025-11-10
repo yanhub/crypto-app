@@ -15,7 +15,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [
       {
@@ -31,14 +31,24 @@
       ]
     },
     "target": "ES2022",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/payload/types",
+      "src/types"
+    ],
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "payload.config.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
-  ],
+  ]
 }

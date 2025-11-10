@@ -7,6 +7,12 @@ node_modules/
 pnpm-debug.log*
 npm-debug.log*
 *.log
+.pnp.*
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
 
 /.idea/*
 !/.idea/runConfigurations

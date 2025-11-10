@@ -148,12 +148,6 @@ export interface Category {
   id: string;
   title: string;
   slug: string;
-  content?: string | null;
-  owner?: (string | null) | User;
-  /**
-   * Связанные посты
-   */
-  posts?: (string | Post)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -279,9 +273,6 @@ export interface UsersSelect<T extends boolean = true> {
 export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
-  content?: T;
-  owner?: T;
-  posts?: T;
   updatedAt?: T;
   createdAt?: T;
 }

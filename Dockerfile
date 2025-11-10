@@ -2,7 +2,7 @@ FROM node:20-alpine
 
 RUN apk add --no-cache libc6-compat bash
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare yarn@stable --activate
 
 WORKDIR /home/node/app/
 

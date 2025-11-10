@@ -1,8 +1,12 @@
 import { withPayload } from '@payloadcms/next/withPayload'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Your Next.js config here
+  allowedDevOrigins: ['crypto.com'],
+  reactStrictMode: true,
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],

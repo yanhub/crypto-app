@@ -2,6 +2,11 @@ import type { CollectionConfig } from 'payload'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
+  versions: { drafts: false },
+  defaultPopulate: {
+    owner: true,
+    categories: true,
+  },
   fields: [
     { name: 'title', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true },
